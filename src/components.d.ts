@@ -6,6 +6,8 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
+    interface CustomDatepicker {
+    }
     interface MyComponent {
         /**
           * The first name
@@ -21,7 +23,28 @@ export namespace Components {
         "middle": string;
     }
 }
+export interface CustomDatepickerCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCustomDatepickerElement;
+}
 declare global {
+    interface HTMLCustomDatepickerElementEventMap {
+        "dateChanged": string;
+    }
+    interface HTMLCustomDatepickerElement extends Components.CustomDatepicker, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCustomDatepickerElementEventMap>(type: K, listener: (this: HTMLCustomDatepickerElement, ev: CustomDatepickerCustomEvent<HTMLCustomDatepickerElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCustomDatepickerElementEventMap>(type: K, listener: (this: HTMLCustomDatepickerElement, ev: CustomDatepickerCustomEvent<HTMLCustomDatepickerElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCustomDatepickerElement: {
+        prototype: HTMLCustomDatepickerElement;
+        new (): HTMLCustomDatepickerElement;
+    };
     interface HTMLMyComponentElement extends Components.MyComponent, HTMLStencilElement {
     }
     var HTMLMyComponentElement: {
@@ -29,10 +52,14 @@ declare global {
         new (): HTMLMyComponentElement;
     };
     interface HTMLElementTagNameMap {
+        "custom-datepicker": HTMLCustomDatepickerElement;
         "my-component": HTMLMyComponentElement;
     }
 }
 declare namespace LocalJSX {
+    interface CustomDatepicker {
+        "onDateChanged"?: (event: CustomDatepickerCustomEvent<string>) => void;
+    }
     interface MyComponent {
         /**
           * The first name
@@ -48,6 +75,7 @@ declare namespace LocalJSX {
         "middle"?: string;
     }
     interface IntrinsicElements {
+        "custom-datepicker": CustomDatepicker;
         "my-component": MyComponent;
     }
 }
@@ -55,6 +83,7 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "custom-datepicker": LocalJSX.CustomDatepicker & JSXBase.HTMLAttributes<HTMLCustomDatepickerElement>;
             "my-component": LocalJSX.MyComponent & JSXBase.HTMLAttributes<HTMLMyComponentElement>;
         }
     }

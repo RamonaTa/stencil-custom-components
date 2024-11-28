@@ -1,0 +1,109 @@
+.datepicker {
+  font-family: Arial, sans-serif;
+  width: 350px;
+}
+
+label {
+  font-size: 14px;
+  margin-bottom: 5px;
+  display: inline-block;
+  color: #555;
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px;
+}
+
+input {
+  border: none;
+  outline: none;
+  font-size: 16px;
+  flex: 1;
+}
+
+.icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #007bff;
+  font-size: 18px;
+}
+
+.calendar-popup {
+  position: absolute;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  background: white;
+  margin-top: 5px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.prev-year, .next-year, .prev-month, .next-month {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.month-year {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.calendar-date {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  text-align: center;
+  cursor: pointer;
+  background-color: #f9f9f9;
+}
+
+.calendar-date:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+.today {
+  background-color: #007bff;
+  color: white;
+}
+
+.holiday {
+  color: red;
+}
+
+.sunday {
+  color: red; /* Domenica in rosso */
+}
+
+.year-selector input {
+  width: 80px;
+  font-size: 16px;
+  text-align: center;
+  padding: 5px;
+  margin-top: 10px;
+}
+
+.hint {
+  font-size: 12px;
+  color: #888;
+  margin-top: 5px;
+}
