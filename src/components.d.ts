@@ -7,20 +7,11 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
     interface CustomDatepicker {
+        "additionalInfo": string;
+        "dateTitle": string;
+        "initialDate": string;
     }
     interface MyComponent {
-        /**
-          * The first name
-         */
-        "first": string;
-        /**
-          * The last name
-         */
-        "last": string;
-        /**
-          * The middle name
-         */
-        "middle": string;
     }
 }
 export interface CustomDatepickerCustomEvent<T> extends CustomEvent<T> {
@@ -58,21 +49,12 @@ declare global {
 }
 declare namespace LocalJSX {
     interface CustomDatepicker {
+        "additionalInfo"?: string;
+        "dateTitle"?: string;
+        "initialDate"?: string;
         "onDateChanged"?: (event: CustomDatepickerCustomEvent<string>) => void;
     }
     interface MyComponent {
-        /**
-          * The first name
-         */
-        "first"?: string;
-        /**
-          * The last name
-         */
-        "last"?: string;
-        /**
-          * The middle name
-         */
-        "middle"?: string;
     }
     interface IntrinsicElements {
         "custom-datepicker": CustomDatepicker;

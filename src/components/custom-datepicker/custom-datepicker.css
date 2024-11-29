@@ -1,6 +1,6 @@
 .datepicker {
   font-family: Arial, sans-serif;
-  width: 350px;
+  width: 100%;
 }
 
 label {
@@ -46,10 +46,14 @@ input {
 .calendar-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 10px;
 }
 
-.prev-year, .next-year, .prev-month, .next-month {
+.prev-year,
+.next-year,
+.prev-month,
+.next-month {
   background: none;
   border: none;
   font-size: 20px;
@@ -103,6 +107,9 @@ input {
 }
 
 .hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 12px;
   color: #888;
   margin-top: 5px;

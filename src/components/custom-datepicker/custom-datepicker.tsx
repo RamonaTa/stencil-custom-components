@@ -1,4 +1,4 @@
-import { Component, h, State, Event, EventEmitter } from '@stencil/core';
+import { Component, h, State, Event, EventEmitter, Prop } from '@stencil/core';
 
 @Component({
   tag: 'custom-datepicker',
@@ -6,17 +6,68 @@ import { Component, h, State, Event, EventEmitter } from '@stencil/core';
   shadow: true,
 })
 export class CustomDatepicker {
+  @Prop() dateTitle: string;
+  @Prop() additionalInfo: string;
+  @Prop() initialDate: string;
   @State() isOpen: boolean = false; // Stato per aprire/chiudere il calendario
   @State() selectedDate: string = ''; // Data selezionata
   @State() currentDate: Date = new Date(); // Data corrente
   @Event() dateChanged: EventEmitter<string>; // Evento per comunicare la data selezionata
 
-  holidays: Date[] = [
-    // Aggiungi le date dei festivi (in formato Date)
-    new Date('2024-01-01'),
-    new Date('2024-12-25'),
-    new Date('2024-08-15'),
-  ];
+  componentDidLoad() {
+    if (this.initialDate) {
+      const [year, month, day] = this.initialDate.split('-');
+      this.selectedDate = `${day}/${month}/${year}`;
+      this.currentDate = new Date(this.initialDate);
+    }
+  }
+
+  getItalianHolidays(year: number): Date[] {
+    // Fixed holidays
+    const fixedHolidays = [
+      new Date(year, 0, 1), // Capodanno
+      new Date(year, 0, 6), // Epifania
+      new Date(year, 3, 25), // Festa della Liberazione
+      new Date(year, 4, 1), // Festa dei Lavoratori
+      new Date(year, 5, 2), // Festa della Repubblica
+      new Date(year, 7, 15), // Ferragosto
+      new Date(year, 10, 1), // Ognissanti
+      new Date(year, 11, 8), // Immacolata Concezione
+      new Date(year, 11, 25), // Natale
+      new Date(year, 11, 26), // Santo Stefano
+    ];
+
+    // Calculate Easter Sunday (Pasqua) and Easter Monday (Pasquetta)
+    const easterDate = this.calculateEaster(year);
+    const easterMonday = new Date(easterDate);
+    easterMonday.setDate(easterDate.getDate() + 1);
+
+    // Add movable holidays
+    fixedHolidays.push(easterDate, easterMonday);
+
+    return fixedHolidays;
+  }
+
+  calculateEaster(year: number): Date {
+    const a = year % 19;
+    const b = Math.floor(year / 100);
+    const c = year % 100;
+    const d = Math.floor(b / 4);
+    const e = b % 4;
+    const f = Math.floor((b + 8) / 25);
+    const g = Math.floor((b - f + 1) / 3);
+    const h = (19 * a + b - d - g + 15) % 30;
+    const i = Math.floor(c / 4);
+    const k = c % 4;
+    const l = (32 + 2 * e + 2 * i - h - k) % 7;
+    const m = Math.floor((a + 11 * h + 22 * l) / 451);
+    const month = Math.floor((h + l - 7 * m + 114) / 31);
+    const day = ((h + l - 7 * m + 114) % 31) + 1;
+
+    return new Date(year, month - 1, day);
+  }
+
+  holidays = this.getItalianHolidays(new Date().getFullYear());
 
   handleInputClick() {
     this.isOpen = !this.isOpen; // Apri/chiudi il calendario
@@ -35,6 +86,7 @@ export class CustomDatepicker {
       this.selectedDate = input.value;
       this.currentDate = date;
       this.dateChanged.emit(this.selectedDate); // Comunica la data selezionata
+      this.holidays = this.getItalianHolidays(date.getFullYear());
     }
   }
 
@@ -94,6 +146,7 @@ export class CustomDatepicker {
     const newDate = new Date(this.currentDate);
     newDate.setMonth(this.currentDate.getMonth() - 1);
     this.currentDate = newDate;
+    this.holidays = this.getItalianHolidays(newDate.getFullYear());
   }
 
   handleNextMonth() {
@@ -101,21 +154,24 @@ export class CustomDatepicker {
     const newDate = new Date(this.currentDate);
     newDate.setMonth(this.currentDate.getMonth() + 1);
     this.currentDate = newDate;
+    this.holidays = this.getItalianHolidays(newDate.getFullYear());
   }
 
-  handlePrevYear() {
-    // Naviga all'anno precedente
-    const newDate = new Date(this.currentDate);
-    newDate.setFullYear(this.currentDate.getFullYear() - 1);
-    this.currentDate = newDate;
-  }
+  // handlePrevYear() {
+  //   // Naviga all'anno precedente
+  //   const newDate = new Date(this.currentDate);
+  //   newDate.setFullYear(this.currentDate.getFullYear() - 1);
+  //   this.currentDate = newDate;
+  //   this.holidays = this.getItalianHolidays(newDate.getFullYear());
+  // }
 
-  handleNextYear() {
-    // Naviga all'anno successivo
-    const newDate = new Date(this.currentDate);
-    newDate.setFullYear(this.currentDate.getFullYear() + 1);
-    this.currentDate = newDate;
-  }
+  // handleNextYear() {
+  //   // Naviga all'anno successivo
+  //   const newDate = new Date(this.currentDate);
+  //   newDate.setFullYear(this.currentDate.getFullYear() + 1);
+  //   this.currentDate = newDate;
+  //   this.holidays = this.getItalianHolidays(newDate.getFullYear());
+  // }
 
   handleYearChange(event: Event) {
     // Cambia l'anno
@@ -123,6 +179,7 @@ export class CustomDatepicker {
     const newDate = new Date(this.currentDate);
     newDate.setFullYear(Number(input.value));
     this.currentDate = newDate;
+    this.holidays = this.getItalianHolidays(newDate.getFullYear());
   }
 
   render() {
@@ -132,7 +189,7 @@ export class CustomDatepicker {
 
     return (
       <div class="datepicker">
-        <label htmlFor="date-input">Data rilascio</label>
+        {this.dateTitle && <label htmlFor="date-input">{this.dateTitle}</label>}
         <div class="input-wrapper">
           <input
             id="date-input"
@@ -141,28 +198,25 @@ export class CustomDatepicker {
             value={this.selectedDate}
             onInput={event => this.handleManualInput(event)}
             onClick={() => this.handleInputClick()}
+            aria-haspopup="dialog"
+            aria-expanded={this.isOpen}
+            aria-labelledby="date-label"
           />
-          <button class="icon-button" onClick={() => this.handleInputClick()}>
+          <button aria-label="Apri calendario" class="icon-button" onClick={() => this.handleInputClick()}>
             <img src="assets/calendar.png" alt="Calendario" class="calendar-icon" />
           </button>
         </div>
 
         {this.isOpen && (
-          <div class="calendar-popup">
-            <div class="calendar-header">
-              {/* <button class="prev-year" onClick={() => this.handlePrevYear()}>
-                ⟨⟨
-              </button> */}
-              <button class="prev-month" onClick={() => this.handlePrevMonth()}>
+          <div class="calendar-popup" role="dialog" aria-labelledby="calendar-title" aria-modal="true">
+            <div id="calendar-title" class="calendar-header">
+              <button aria-label="Mese precedente" class="prev-month" onClick={() => this.handlePrevMonth()}>
                 ❮
               </button>
-              <span class="month-year">{`${currentMonth} ${this.currentDate.getFullYear()}`}</span>
-              <button class="next-month" onClick={() => this.handleNextMonth()}>
+              <span class="month-year" aria-live="polite">{`${currentMonth} ${this.currentDate.getFullYear()}`}</span>
+              <button aria-label="Mese successivo" class="next-month" onClick={() => this.handleNextMonth()}>
                 ❯
               </button>
-              {/* <button class="next-year" onClick={() => this.handleNextYear()}>
-                ⟩⟩
-              </button> */}
             </div>
 
             <div class="calendar">
@@ -174,6 +228,13 @@ export class CustomDatepicker {
                     'holiday': this.isHoliday(date),
                     'sunday': this.isSunday(date), // Aggiungi domenica in rosso
                   }}
+                  aria-current={this.isToday(date) ? 'date' : undefined}
+                  aria-label={`Seleziona ${date.toLocaleDateString('it-IT', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}`}
                   onClick={() => this.handleDateSelect(this.formatDate(date))}
                 >
                   {date.getDate()}
@@ -183,12 +244,16 @@ export class CustomDatepicker {
 
             {/* Selettore anno */}
             <div class="year-selector">
-              <input type="number" value={this.currentDate.getFullYear()} onInput={event => this.handleYearChange(event)} min="1900" max="2100" />
+              <input type="number" aria-label="Seleziona anno" value={this.currentDate.getFullYear()} onInput={event => this.handleYearChange(event)} min="1900" max="2100" />
             </div>
           </div>
         )}
 
-        <p class="hint"><img src="assets/informationCircle.png" alt="Calendario" class="info-icon" /> Formato data: gg/mm/aaaa</p>
+        {this.additionalInfo && (
+          <p class="hint">
+            <img src="assets/informationCircle.png" alt="Informazione" class="info-icon" /> {this.additionalInfo}
+          </p>
+        )}
       </div>
     );
   }

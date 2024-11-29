@@ -1,3 +1,12 @@
 :host {
   display: block;
 }
+
+.component-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  .datepicker-container {
+    max-width: 400px;
+  }
+}
